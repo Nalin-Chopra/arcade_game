@@ -9,6 +9,12 @@ var loadingScreenText = null;
 var totalScore = 0;
 var highScore = 0;
 
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 function preloadWebFont() {
     newGame.load.script('webfont', 'https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js');
 }
@@ -23,21 +29,21 @@ function initializeText() {
     newGame.state.start('CreditState');
   }
 
-  var button1 = newGame.add.button(newGame.world.centerX - 120, newGame.world.centerY + 190, 'button1', startGameFunc);
+  var button1 = newGame.add.button(newGame.world.centerX - 135, newGame.world.centerY + 190, 'button1', startGameFunc);
   button1.anchor.setTo(0.5);
 
-  var button2 = newGame.add.button(newGame.world.centerX + 120, newGame.world.centerY + 190, 'button1', creditsFunc);
+  var button2 = newGame.add.button(newGame.world.centerX + 135, newGame.world.centerY + 190, 'button1', creditsFunc);
   button2.anchor.setTo(0.5);
 
   var titleTextPt1 = newGame.add.text(newGame.world.centerX, newGame.world.centerY - 230, "MYSTERIES OF DA",
-      {font: "40px indie", fill: "#ffffff"});
-  var titleTextPt2 = newGame.add.text(newGame.world.centerX, newGame.world.centerY - 165, "CHONK",
-      {font: "80px indie", fill: "#ffffff"});
-  var playButton = newGame.add.text(newGame.world.centerX - 120, newGame.world.centerY + 190, "PLAY",
-      {font: "50px indie", fill: "#ffffff"});
+      {font: "60px indie", fill: "#ffffff"});
+  var titleTextPt2 = newGame.add.text(newGame.world.centerX, newGame.world.centerY - 150, "CHONK",
+      {font: "110px indie", fill: "#ffffff"});
+  var playButton = newGame.add.text(newGame.world.centerX - 135, newGame.world.centerY + 190, "PLAY",
+      {font: "60px indie", fill: "#ffffff"});
 
-  var creditsButton = newGame.add.text(newGame.world.centerX + 120, newGame.world.centerY + 190, "CREDITS",
-      {font: "40px indie", fill: "#ffffff"});
+  var creditsButton = newGame.add.text(newGame.world.centerX + 135, newGame.world.centerY + 190, "CREDITS",
+      {font: "60px indie", fill: "#ffffff"});
 
   titleTextPt1.anchor.setTo(0.5);
   titleTextPt2.anchor.setTo(0.5);
@@ -62,16 +68,13 @@ var CreditState = {
     backButton.anchor.setTo(0.5);
     var backButtonText = newGame.add.text(newGame.world.centerX, newGame.world.centerY + 150, "BACK",
         {font: "50px indie", fill: "#ffffff"});
-    backButtonText.anchor.setTo(0.5);
-
-    
+    backButtonText.anchor.setTo(0.5);    
   },
 
   goHome: function() {
     newGame.state.start('HomeState');
   }
 }
-
 
 var BootState = {
   init: function() {
@@ -82,13 +85,15 @@ var BootState = {
 
   preload: function() {
     newGame.load.image('loading_bar', 'assets/images/loading_bar.jpg');
-    newGame.load.image('main_pic', 'assets/images/glasses_chonk.jpg');
+    newGame.load.image('bigplanet', 'assets/images/glasses_chonk.jpg');
     newGame.load.image('background', 'assets/images/home_background.jpg');
+    newGame.load.image( 'jumper', 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/836/dude.png' );
+    newGame.load.image( 'pixel', 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/836/pixel_1.png' );
   },
 
   create: function() {
     newGame.state.start('PreloadState');
-  }
+  },
 }
 
 
@@ -102,13 +107,11 @@ var PreloadState = {
   preload: function() {
     newGame.load.audio('jump', 'assets/sounds/jump.wav');
     newGame.load.audio('end_of_game', 'assets/sounds/end_of_game.wav');
-    newGame.load.image('flappy_bird_yellow', 'assets/images/flappy_bird.png');
-    newGame.load.image('purple_pipe', 'assets/images/purple_pipe.png');
-    newGame.load.image('purple_pipe_end', 'assets/images/purple_pipe_end.png');
+    newGame.load.image('purple_pipe', 'assets/images/platform.png');
     newGame.load.image('yellow_star', 'assets/images/yellow_star_final.png');
+    newGame.load.image('doodle_jumper', 'assets/images/doodler-guy.png');
+    newGame.load.image('platform', 'assets/images/platform.png');
     newGame.load.image('button1', 'assets/images/button1.png');
-    newGame.load.audio('jump', 'assets/sounds/jump.wav');
-    newGame.load.audio('end_of_game', 'assets/sounds/end_of_game.wav');
 
     this.background = newGame.add.sprite(270, 350, 'background');
     this.background.anchor.setTo(0.5);
@@ -124,7 +127,7 @@ var PreloadState = {
 
   create: function() {
     newGame.state.start('HomeState');
-  }
+  },
 }
 
 var HomeState = {
@@ -135,162 +138,137 @@ var HomeState = {
     this.background = newGame.add.sprite(270, 350, 'background');
     this.background.anchor.setTo(0.5);
     loadingScreenText = newGame.add.text(newGame.world.centerX, newGame.world.centerY + 50, "Loading...",
-        {font: "60px Arial", fill: "#ffffff"});
+        {font: "60px indie", fill: "#ffffff"});
     loadingScreenText.anchor.setTo(0.5);
   }
 }
 
 var MainState = {
-    preload: function() {
-    },
 
     create: function() {
-      this.background = newGame.add.sprite(270, 350, 'background');
-      this.background.anchor.setTo(0.5);
+      // this.background = newGame.add.sprite(270, 350, 'background');
+      this.stage.backgroundColor = '#6bf';
+      // this.background.anchor.setTo(0.5);
       this.score = 0;
       this.scoreText = newGame.add.text(newGame.world.centerX, newGame.world.centerY - 225, "0",
-                  { font: "90px indie", fill: "#ffffff" });
+                  { font: "90px indie", fill: "#ffffff" , position: "sticky"});
 
-      newGame.world.bringToTop(this.scoreText);
       // newGame.stage.backgroundColor = '#71c5cf'
-      this.flappingNoise = newGame.add.audio('jump');
+      this.jumpingNoise = newGame.add.audio('jump');
       this.endOfGame = newGame.add.audio('end_of_game');
+      // this.stars = newGame.add.group();
+      // this.jumper = newGame.add.sprite(100, 245, 'doodle_jumper');
 
-      this.pipes = newGame.add.group();
-      this.stars = newGame.add.group();
-      this.bird = newGame.add.sprite(100, 245, 'flappy_bird_yellow');
-      this.bird.anchor.setTo(-0.2, 0.5);
+      this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+      this.scale.maxWidth = newGame.width;
+      this.scale.maxHeight = newGame.height;
+      this.scale.pageAlignHorizontally = true;
+      this.scale.pageAlignVertically = true;
 
-      newGame.physics.startSystem(Phaser.Physics.ARCADE);
-      newGame.physics.arcade.enable(this.bird);
-      this.timer = newGame.time.events.loop(1350, this.addPipeRow, this);
+      this.physics.startSystem( Phaser.Physics.ARCADE );
 
-      this.bird.body.gravity.y = 1500;
+      this.cameraYMin = 99999;
+      this.platformYMin = 99999;
 
-      var spaceKey = newGame.input.keyboard.addKey(
-                      Phaser.Keyboard.SPACEBAR);
-      spaceKey.onDown.add(this.flyUp, this);
-      newGame.input.onDown.add(this.flyUp, this);
+      this.createAllPlatforms();
+      this.createJumper();
+      this.cursor = this.input.keyboard.createCursorKeys();
+      newGame.world.bringToTop(this.scoreText);
+
     },
 
     update: function() {
+      newGame.world.setBounds( 0, -this.jumper.yChange, newGame.world.width, newGame.height + this.jumper.yChange );
+      this.cameraYMin = Math.min( this.cameraYMin, this.jumper.y - newGame.height + 160 );
+      this.camera.y = this.cameraYMin;
+      this.physics.arcade.collide( this.jumper, this.platforms );
+      this.jumperMove();
+      newGame.world.bringToTop(this.scoreText);
 
-        if (this.bird.y > 690) {
-          totalScore = this.score;
-          highScore = Math.max(this.score, highScore);
-          this.gameOver();
+      this.platforms.forEachAlive( function( elem ) {
+        this.platformYMin = Math.min( this.platformYMin, elem.y );
+        if( elem.y > this.camera.y + newGame.height ) {
+          elem.kill();
+          this.createSinglePlatform(getRandomInt( 0, newGame.world.width - 50 ), this.platformYMin - 100, 125 );
         }
-        newGame.physics.arcade.overlap(this.bird, this.pipes, this.pipeCollision, null, this);
-
-        if (this.stars != null) {
-          newGame.physics.arcade.overlap(this.bird, this.stars, this.gotStar, null, this);
-        }
-
-        if (this.bird.angle < 15) {
-          this.bird.angle += 1;
-        }
+      }, this );
     },
 
-    flyUp: function() {
-      if (!this.bird.alive) {
-        return;
-      }
-      this.bird.body.velocity.y = -450;
-      var tiltAnimation = newGame.add.tween(this.bird);
+    createJumper: function() {
+      this.jumper = newGame.add.sprite( newGame.world.centerX, newGame.world.height - 75, 'doodle_jumper');
+      this.jumper.anchor.set( 0.5 );
+      this.jumper.yOrig = this.jumper.y;
+      this.jumper.yChange = 0;
+      this.physics.arcade.enable( this.jumper );
+      this.jumper.body.gravity.y = 500;
+      this.jumper.body.checkCollision.up = false;
+      this.jumper.body.checkCollision.left = false;
+      this.jumper.body.checkCollision.right = false;
+    },
 
-      tiltAnimation.to({angle: -10}, 500);
-      tiltAnimation.start();
-      this.flappingNoise.play();
+    jumperMove: function() {
+
+      if( this.cursor.left.isDown ) {
+        this.jumper.body.velocity.x = -300;
+      } else if( this.cursor.right.isDown ) {
+        this.jumper.body.velocity.x = 300;
+      } else {
+        this.jumper.body.velocity.x = 0;
+      }
+
+      if( this.cursor.up.isDown && this.jumper.body.touching.down ) {
+        this.score += 1;
+        this.scoreText.text = this.score;
+        this.jumper.body.velocity.y = -500;
+        this.jumpingNoise.play();
+        this.scoreText.y =  this.jumper.y - this.jumper.yOrig + 35
+        // console.log("scoretext.y", this.scoreText.y)
+        // console.log("jumper.y", this.jumper.Y)
+        // console.log("jumper.y orig", this.jumper.yOrig)
+      } 
+      
+      this.world.wrap( this.jumper, this.jumper.width / 2, false );
+      this.jumper.yChange = Math.max( this.jumper.yChange, Math.abs( this.jumper.y - this.jumper.yOrig ) );
+      
+      if( this.jumper.y > this.cameraYMin + newGame.height && this.jumper.alive ) {
+        this.gameOver();
+      }
+    },
+
+    createAllPlatforms: function() {
+      this.platforms = newGame.add.group();
+      this.platforms.enableBody = true;
+      this.platforms.createMultiple(10, 'pixel');
+      this.createSinglePlatform( -16, this.world.height - 16, this.world.width + 16 );
+      for( var i = 0; i < 6; i++ ) {
+        this.createSinglePlatform( getRandomInt(100, newGame.world.width - 100), this.world.height - 100 - 100 * i, 125 );
+      }
+    },
+
+    createSinglePlatform: function(x, y, width) {
+      var platform = this.platforms.getFirstDead();
+      platform.reset( x, y );
+      platform.scale.x = width;
+      platform.scale.y = 16;
+      platform.body.immovable = true;
     },
 
     gameOver: function() {
+      totalScore = this.score;
+      highScore = Math.max(this.score, highScore);
       newGame.state.start('GameOverState');
     },
-
-    addPipeEnd: function(x, y) {
-      var newPipeEnd = newGame.add.sprite(x, y, 'purple_pipe_end');
-      this.pipes.add(newPipeEnd);
-
-      newGame.physics.arcade.enable(newPipeEnd);
-
-      newPipeEnd.body.velocity.x = -275;
-
-      newPipeEnd.checkWorldBounds = true;
-      newPipeEnd.outOfBoundsKill = true;
+    shutdown: function() {
+      this.world.setBounds( 0, 0, newGame.width, newGame.height );
+      this.cursor = null;
+      this.jumper.destroy();
+      this.jumper = null;
+      this.platforms.destroy();
+      this.platforms = null;
     },
-
-    addPipe: function(x, y) {
-      var newPipe = newGame.add.sprite(x, y, 'purple_pipe');
-
-      this.pipes.add(newPipe);
-
-      newGame.physics.arcade.enable(newPipe);
-
-      newPipe.body.velocity.x = -275;
-
-      newPipe.checkWorldBounds = true;
-      newPipe.outOfBoundsKill = true;
-    },
-    addStar: function(x, y) {
-      var newStar = newGame.add.sprite(x, y, 'yellow_star');
-      this.stars.add(newStar);
-
-      newGame.physics.arcade.enable(newStar);
-      newStar.body.velocity.x = -275;
-      newStar.checkWorldBounds = true;
-      newStar.outofBoundsKill = true;
-
-    },
-
-    addPipeRow: function() {
-      var opening = Math.floor(Math.random() * 7) + 1;
-
-      this.addStar(620, (opening + Math.random() * 2) * 64 + 15);
-      this.addPipeEnd(595, (opening) * 64);
-      this.addPipeEnd(595, (opening + 3) * 64);
-
-      for (var count = 0; count < 11; count++) {
-          if (count < opening) {
-            this.addPipe(600, count * 64);
-          } else if (count > opening + 2) {
-            this.addPipe(600, count * 64 + 15);
-          }
-      }
-
-
-      newGame.world.bringToTop(this.scoreText);
-    },
-
-    gotStar: function(bird, star) {
-      if (!this.bird.alive) {
-        return;
-      }
-      this.score += 1;
-      this.scoreText.text = this.score;
-
-      this.stars.remove(star);
-    },
-
-    pipeCollision: function() {
-      if (!this.bird.alive) {
-        return;
-      }
-
-      this.endOfGame.play();
-
-      this.bird.alive = false;
-
-      newGame.time.events.remove(this.timer);
-
-      this.stars.forEach(function(star) {
-        star.body.velocity.x = 0;
-      })
-
-      this.pipes.forEach(function(pipe) {
-        pipe.body.velocity.x = 0;
-      })
-    }
 };
+
+
 
 var GameOverState = {
 
@@ -303,31 +281,31 @@ var GameOverState = {
     gameOverText.anchor.setTo(0.5);
 
     yourScoreText = newGame.add.text(newGame.world.centerX - 120, newGame.world.centerY - 55, "Your Score",
-          {font: "25px indie", fill: "#ffffff"});
+          {font: "40px indie", fill: "#ffffff"});
     yourScoreText.anchor.setTo(0.5);
 
     scoreText = newGame.add.text(newGame.world.centerX - 120, newGame.world.centerY - 5, totalScore,
-          {font: "40px indie", fill: "#ffffff"});
+          {font: "50px indie", fill: "#ffffff"});
     scoreText.anchor.setTo(0.5);
 
     yourHighScoreText = newGame.add.text(newGame.world.centerX + 120, newGame.world.centerY - 55, "High Score",
-          {font: "25px indie", fill: "#ffffff"});
+          {font: "40px indie", fill: "#ffffff"});
     yourHighScoreText.anchor.setTo(0.5);
 
     highScoreText = newGame.add.text(newGame.world.centerX + 120, newGame.world.centerY - 5, highScore,
-          {font: "40px indie", fill: "#ffffff"});
+          {font: "50px indie", fill: "#ffffff"});
     highScoreText.anchor.setTo(0.5);
 
-    this.playButton = newGame.add.button(newGame.world.centerX - 120, newGame.world.centerY + 135, 'button1', this.startGame, this);
+    this.playButton = newGame.add.button(newGame.world.centerX - 140, newGame.world.centerY + 135, 'button1', this.startGame, this);
     this.playButton.anchor.setTo(0.5);
-    var playButtonText = newGame.add.text(newGame.world.centerX - 120, newGame.world.centerY + 135, 'PLAY',
-          {font: "50px indie", fill: "#ffffff"});
+    var playButtonText = newGame.add.text(newGame.world.centerX - 140, newGame.world.centerY + 135, 'PLAY',
+          {font: "45px indie", fill: "#ffffff"});
     playButtonText.anchor.setTo(0.5);
 
-    this.homeButton = newGame.add.button(newGame.world.centerX + 120, newGame.world.centerY + 135, 'button1', this.goHome, this);
+    this.homeButton = newGame.add.button(newGame.world.centerX + 140, newGame.world.centerY + 135, 'button1', this.goHome, this);
     this.homeButton.anchor.setTo(0.5);
-    var homeButtonText = newGame.add.text(newGame.world.centerX + 120, newGame.world.centerY + 135, 'HOME',
-          {font: "50px indie", fill: "#ffffff"});
+    var homeButtonText = newGame.add.text(newGame.world.centerX + 140, newGame.world.centerY + 135, 'HOME',
+          {font: "45px indie", fill: "#ffffff"});
     homeButtonText.anchor.setTo(0.5);
   },
 
@@ -340,7 +318,7 @@ var GameOverState = {
   }
 }
 
-var newGame = new Phaser.Game(600, 700);
+var newGame = new Phaser.Game(700, 700, Phaser.CANVAS, "");
 
 newGame.state.add('MainState', MainState);
 newGame.state.add('HomeState', HomeState);
