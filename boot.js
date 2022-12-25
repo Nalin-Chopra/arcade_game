@@ -87,8 +87,6 @@ var BootState = {
     newGame.load.image('loading_bar', 'assets/images/loading_bar.jpg');
     newGame.load.image('bigplanet', 'assets/images/glasses_chonk.jpg');
     newGame.load.image('background', 'assets/images/home_background.jpg');
-    newGame.load.image( 'jumper', 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/836/dude.png' );
-    newGame.load.image( 'pixel', 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/836/pixel_1.png' );
   },
 
   create: function() {
@@ -147,9 +145,13 @@ var MainState = {
 
     create: function() {
       // this.background = newGame.add.sprite(270, 350, 'background');
-      this.stage.backgroundColor = '#6bf';
+      this.stage.backgroundColor = '#11d6c8';
       // this.background.anchor.setTo(0.5);
       this.score = 0;
+      this.scoreMultiplier = 1;
+      this.speedBoost = 1;
+      this.boostActivated = false;
+      // this.boostTimer = new Timer(newGame);
       this.scoreText = newGame.add.text(newGame.world.centerX, newGame.world.centerY - 225, "0",
                   { font: "90px indie", fill: "#ffffff" , position: "sticky"});
 
@@ -165,6 +167,7 @@ var MainState = {
       this.scale.pageAlignHorizontally = true;
       this.scale.pageAlignVertically = true;
 
+
       this.physics.startSystem( Phaser.Physics.ARCADE );
 
       this.cameraYMin = 99999;
@@ -172,6 +175,7 @@ var MainState = {
 
       this.createAllPlatforms();
       this.createJumper();
+      this.stars = newGame.add.group();
       this.cursor = this.input.keyboard.createCursorKeys();
       newGame.world.bringToTop(this.scoreText);
 
@@ -185,13 +189,19 @@ var MainState = {
       this.jumperMove();
       newGame.world.bringToTop(this.scoreText);
 
+      if (this.stars != null) {
+        newGame.physics.arcade.overlap(this.jumper, this.stars, this.gotStar, null, this);
+      }
+
       this.platforms.forEachAlive( function( elem ) {
         this.platformYMin = Math.min( this.platformYMin, elem.y );
         if( elem.y > this.camera.y + newGame.height ) {
           elem.kill();
-          this.createSinglePlatform(getRandomInt( 0, newGame.world.width - 50 ), this.platformYMin - 100, 125 );
+          this.createSinglePlatform(getRandomInt( 0, newGame.world.width - 50 ), this.platformYMin - 100, 1.5 );
         }
       }, this );
+
+
     },
 
     createJumper: function() {
@@ -217,9 +227,9 @@ var MainState = {
       }
 
       if( this.cursor.up.isDown && this.jumper.body.touching.down ) {
-        this.score += 1;
-        this.scoreText.text = this.score;
-        this.jumper.body.velocity.y = -500;
+        this.updateScore();
+        
+        this.jumper.body.velocity.y = -500 * this.speedBoost;
         this.jumpingNoise.play();
         this.scoreText.y =  this.jumper.y - this.jumper.yOrig + 35
         // console.log("scoretext.y", this.scoreText.y)
@@ -238,10 +248,10 @@ var MainState = {
     createAllPlatforms: function() {
       this.platforms = newGame.add.group();
       this.platforms.enableBody = true;
-      this.platforms.createMultiple(10, 'pixel');
+      this.platforms.createMultiple(10, 'platform');
       this.createSinglePlatform( -16, this.world.height - 16, this.world.width + 16 );
       for( var i = 0; i < 6; i++ ) {
-        this.createSinglePlatform( getRandomInt(100, newGame.world.width - 100), this.world.height - 100 - 100 * i, 125 );
+        this.createSinglePlatform( getRandomInt(100, newGame.world.width - 100), this.world.height - 100 - 100 * i, 1.5);
       }
     },
 
@@ -249,13 +259,38 @@ var MainState = {
       var platform = this.platforms.getFirstDead();
       platform.reset( x, y );
       platform.scale.x = width;
-      platform.scale.y = 16;
+      platform.scale.y = 1;
       platform.body.immovable = true;
+      if (getRandomInt(0, 5) === 1 && this.stars != null && this.boostActivated !== true) {
+        this.addStar(x, y + 20);
+      }
+
     },
+
+    addStar: function(x, y) {
+      var newStar = newGame.add.sprite(x, y, 'yellow_star');
+      this.stars.add(newStar);
+
+      newGame.physics.arcade.enable(newStar);
+    },
+
+    gotStar: function(jumper, star) {
+      this.scoreMultiplier *= 2
+      this.speedBoost = 1.25
+      this.stars.remove(star);
+    },
+
+    updateScore: function() {
+      var scoreMultiplier = this.scoreMultiplier;
+      this.score += scoreMultiplier;
+      this.scoreText.text = this.score;
+    },
+
 
     gameOver: function() {
       totalScore = this.score;
       highScore = Math.max(this.score, highScore);
+      this.endOfGame.play();
       newGame.state.start('GameOverState');
     },
     shutdown: function() {
