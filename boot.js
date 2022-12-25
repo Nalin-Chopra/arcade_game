@@ -151,7 +151,7 @@ var MainState = {
       this.scoreMultiplier = 1;
       this.speedBoost = 1;
       this.boostActivated = false;
-      // this.boostTimer = new Timer(newGame);
+      // this.boostTimer = new Phaser.Timer(newGame);
       this.scoreText = newGame.add.text(newGame.world.centerX, newGame.world.centerY - 225, "0",
                   { font: "90px indie", fill: "#ffffff" , position: "sticky"});
 
@@ -231,10 +231,11 @@ var MainState = {
         
         this.jumper.body.velocity.y = -500 * this.speedBoost;
         this.jumpingNoise.play();
-        this.scoreText.y =  this.jumper.y - this.jumper.yOrig + 35
-        // console.log("scoretext.y", this.scoreText.y)
-        // console.log("jumper.y", this.jumper.Y)
-        // console.log("jumper.y orig", this.jumper.yOrig)
+        if (this.boostActivated) {
+          this.scoreText.y =  this.jumper.y - this.jumper.yOrig - 150
+        } else {
+          this.scoreText.y =  this.jumper.y - this.jumper.yOrig + 35
+        }
       } 
       
       this.world.wrap( this.jumper, this.jumper.width / 2, false );
@@ -261,10 +262,9 @@ var MainState = {
       platform.scale.x = width;
       platform.scale.y = 1;
       platform.body.immovable = true;
-      if (getRandomInt(0, 5) === 1 && this.stars != null && this.boostActivated !== true) {
-        this.addStar(x, y + 20);
+      if (getRandomInt(0, 3) === 1 && this.stars != null && this.boostActivated !== true) {
+        this.addStar(getRandomInt(200, newGame.world.width - 200), y + 20);
       }
-
     },
 
     addStar: function(x, y) {
@@ -275,9 +275,27 @@ var MainState = {
     },
 
     gotStar: function(jumper, star) {
-      this.scoreMultiplier *= 2
-      this.speedBoost = 1.25
+      this.scoreMultiplier *= 3
+      this.speedBoost = 1.5
       this.stars.remove(star);
+      newGame.time.events.add(Phaser.Timer.SECOND * 8, this.endBoost, this);
+
+      if (!this.boostActivated) {
+        newGame.time.events.add(Phaser.Timer.SECOND * 3, this.displayBoostTimer, this, "BOOST ENDING");
+      }
+      this.boostActivated = true;
+    },
+
+    displayBoostTimer: function(text) {
+      this.boostTimerText = newGame.add.text(newGame.world.centerX, this.jumper.y - this.jumper.yOrig - 150, text,
+                  { font: "100px indie", fill: "#ffffff" , position: "sticky"});
+      this.boostTimerText.anchor.setTo(0.5);
+    },
+
+    endBoost: function() {
+      this.scoreMultiplier = 1;
+      this.speedBoost = 1
+      this.boostActivated = false;
     },
 
     updateScore: function() {
