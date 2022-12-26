@@ -85,7 +85,7 @@ var BootState = {
 
   preload: function() {
     newGame.load.image('loading_bar', 'assets/images/loading_bar.jpg');
-    newGame.load.image('bigplanet', 'assets/images/glasses_chonk.jpg');
+    newGame.load.image('glasses_chonk', 'assets/images/glasses_chonk.png');
     newGame.load.image('background', 'assets/images/home_background.jpg');
   },
 
@@ -262,7 +262,8 @@ var MainState = {
       platform.scale.x = width;
       platform.scale.y = 1;
       platform.body.immovable = true;
-      if (getRandomInt(0, 3) === 1 && this.stars != null && this.boostActivated !== true) {
+      // create random boosts
+      if (getRandomInt(0, 15) === 1 && this.stars != null && this.boostActivated !== true) {
         this.addStar(getRandomInt(200, newGame.world.width - 200), y + 20);
       }
     },
@@ -275,6 +276,7 @@ var MainState = {
     },
 
     gotStar: function(jumper, star) {
+      this.jumper.loadTexture('glasses_chonk');
       this.scoreMultiplier *= 3
       this.speedBoost = 1.5
       this.stars.remove(star);
@@ -296,6 +298,7 @@ var MainState = {
       this.scoreMultiplier = 1;
       this.speedBoost = 1
       this.boostActivated = false;
+      this.jumper.loadTexture('doodle_jumper');
     },
 
     updateScore: function() {
